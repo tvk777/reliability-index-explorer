@@ -1,26 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
+import { useReliability } from './hooks/useReliability';
 
 function App() {
   const userId = 'user_1001';
   const from = '2026-02-20';
 
-  const { data, isPending, isError, error } = useQuery({
-    queryKey: ['reliability', userId, from],
-
-    queryFn: async () => {
-      const response = await fetch(
-        `https://wydokyegph.execute-api.eu-central-1.amazonaws.com/api/users/${userId}/reliability?from=${from}`,
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch reliability data');
-      }
-
-      return response.json();
-    },
-
-    staleTime: 5 * 60 * 1000,
-  });
+  const { data, isPending, isError, error } = useReliability(userId, from)
 
   if (isPending) {
     return <div className='p-8'>Loading...</div>;
@@ -32,17 +16,14 @@ function App() {
 
 
   return (
-    <div className='min-h-screen bg-slate-100 p-8'>
-      <h1 className='text-3xl font-bold text-slate-900'>Reliability Index Explorer</h1>
+    <main>
+      <h1>Reliability Index</h1>
 
-      <div className='mt-6 rounded-lg bg-white p-6 shadow'>
-        <p className='text-slate-600'>Reliability Index</p>
-
-        <p className='mt-2 text-5xl font-bold text-slate-900'>{data.reliability_index}</p>
-
-        <p className='mt-2 text-lg'>{data.score_band}</p>
-      </div>
-    </div>
+      <p>Score: {data.reliability_index}</p>
+      <p>Band: {data.score_band}</p>
+      <p>Currency: {data.currency}</p>
+      <p>From: {data.from}</p>
+    </main>
   );
 }
 
