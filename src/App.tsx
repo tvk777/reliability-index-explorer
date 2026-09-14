@@ -1,4 +1,7 @@
 import { useReliability } from './hooks/useReliability';
+import { ReliabilityOverview } from './components/ReliabilityOverview/ReliabilityOverview';
+import { KeyMetrics } from './components/KeyMetrics/KeyMetrics';
+import { ScoreDrivers } from './components/ScoreDrivers/ScoreDrivers';
 
 function App() {
   const userId = 'user_1001';
@@ -17,12 +20,11 @@ function App() {
 
   return (
     <main>
-      <h1>Reliability Index</h1>
-
-      <p>Score: {data.reliability_index}</p>
-      <p>Band: {data.score_band}</p>
-      <p>Currency: {data.currency}</p>
-      <p>From: {data.from}</p>
+      <ReliabilityOverview data={data} />
+      <div className='mt-6 grid gap-6 lg:grid-cols-2'>
+        <KeyMetrics metrics={data.metrics} />
+        <ScoreDrivers drivers={data.drivers} />
+      </div>
     </main>
   );
 }
