@@ -1,5 +1,6 @@
 import { useReliability } from './hooks/useReliability';
 import { ReliabilityOverview } from './components/ReliabilityOverview/ReliabilityOverview';
+import { ScoreBreakdown } from './components/ScoreBreakdown/ScoreBreakdown';
 import { KeyMetrics } from './components/KeyMetrics/KeyMetrics';
 import { ScoreDrivers } from './components/ScoreDrivers/ScoreDrivers';
 
@@ -21,10 +22,13 @@ function App() {
   return (
     <main>
       <ReliabilityOverview data={data} />
+
       <div className='mt-6 grid gap-6 lg:grid-cols-2'>
         <KeyMetrics metrics={data.metrics} />
         <ScoreDrivers drivers={data.drivers} />
       </div>
+
+      <ScoreBreakdown data={data} />
     </main>
   );
 }
