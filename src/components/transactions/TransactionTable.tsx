@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react';
 import type { Transaction } from '../../types/transaction';
+import type { MerchantCategory } from '../../types/merchantCategory';
 
 type SortField = 'date' | 'amount';
 type SortDirection = 'asc' | 'desc';
 
 type TransactionTableProps = {
   transactions: Transaction[];
+  categoryMap: Map<string, MerchantCategory>;
 };
 
-export const TransactionTable = ({ transactions }: TransactionTableProps) => {
+export const TransactionTable = ({ transactions, categoryMap }: TransactionTableProps) => {
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -76,7 +78,7 @@ export const TransactionTable = ({ transactions }: TransactionTableProps) => {
 
               <td className='px-4 py-3 text-slate-600'>{transaction.description}</td>
 
-              <td className='px-4 py-3 text-slate-600'>{transaction.merchant_category_code}</td>
+              <td className='px-4 py-3 text-slate-600'>{categoryMap.get(transaction.merchant_category_code)?.name}</td>
 
               <td className='px-4 py-3 text-right font-medium'>
                 {transaction.amount.toFixed(2)} {transaction.currency}
