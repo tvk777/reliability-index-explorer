@@ -1,5 +1,7 @@
+import { useMerchantCategories } from '../../hooks/useMerchantCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import type { ScoringWindow } from '../../utils/scoringWindow';
+import { TransactionTable } from './TransactionTable';
 
 type TransactionsViewProps = {
   userId: string;
@@ -13,6 +15,9 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
     isError,
     error,
   } = useTransactions(userId, scoringWindow.start, scoringWindow.end);
+
+  const { data: categories } = useMerchantCategories();
+  console.log(categories);
 
   if (isPending) {
     return (
@@ -35,6 +40,8 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
       <h2 className='text-2xl font-semibold text-slate-900'>Transactions</h2>
 
       <p className='mt-2 text-sm text-slate-500'>{transactions.total} transactions loaded.</p>
+
+      <TransactionTable transactions={transactions.transactions} />
     </section>
   );
 };
