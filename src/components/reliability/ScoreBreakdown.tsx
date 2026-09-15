@@ -17,6 +17,10 @@ const getResilienceDrivers = (drivers: string[]) => {
     });
 };
 
+const SCORING_MONTHS = 6;
+const MAX_SIGNAL_POINTS = 25;
+const MIN_SIGNAL_POINTS = 20;
+
 export const ScoreBreakdown = ({ data }: ScoreBreakdownProps) => {
   const { metrics, drivers } = data;
 
@@ -24,7 +28,7 @@ export const ScoreBreakdown = ({ data }: ScoreBreakdownProps) => {
 
   const netAdjustment = resilienceDrivers.reduce((total, driver) => total + driver.points, 0);
 
-  const incomeMonths = Math.round(metrics.income_regularity * 6);
+  const incomeMonths = Math.round(metrics.income_regularity * SCORING_MONTHS);
   const paymentConsistency = Math.round(metrics.essential_payments_consistency * 100);
 
   return (
@@ -38,11 +42,15 @@ export const ScoreBreakdown = ({ data }: ScoreBreakdownProps) => {
         <div className='rounded-xl bg-slate-50 p-5'>
           <h3 className='text-sm font-semibold text-slate-800'>Income Regularity</h3>
 
-          <p className='mt-4 text-2xl font-semibold text-slate-900'>{incomeMonths} / 6 months</p>
+          <p className='mt-4 text-2xl font-semibold text-slate-900'>
+            {incomeMonths} / {SCORING_MONTHS} months
+          </p>
 
-          <p className='mt-2 text-sm text-slate-600'>Income was present in {incomeMonths} of the 6 scoring months.</p>
+          <p className='mt-2 text-sm text-slate-600'>
+            Income was present in {incomeMonths} of the {SCORING_MONTHS} scoring months.
+          </p>
 
-          <p className='mt-5 text-xs text-slate-400'>Maximum contribution: 25 points</p>
+          <p className='mt-5 text-xs text-slate-400'>Maximum contribution: {MAX_SIGNAL_POINTS} points</p>
         </div>
 
         {/* Plus */}
@@ -56,7 +64,7 @@ export const ScoreBreakdown = ({ data }: ScoreBreakdownProps) => {
 
           <p className='mt-2 text-sm text-slate-600'>Total income compared with total essential expenses.</p>
 
-          <p className='mt-5 text-xs text-slate-400'>Maximum contribution: 25 points</p>
+          <p className='mt-5 text-xs text-slate-400'>Maximum contribution: {MAX_SIGNAL_POINTS} points</p>
         </div>
 
         {/* Plus */}
@@ -72,7 +80,7 @@ export const ScoreBreakdown = ({ data }: ScoreBreakdownProps) => {
             Essential payment categories were detected consistently across months.
           </p>
 
-          <p className='mt-5 text-xs text-slate-400'>Maximum contribution: 25 points</p>
+          <p className='mt-5 text-xs text-slate-400'>Maximum contribution: {MAX_SIGNAL_POINTS} points</p>
         </div>
 
         {/* Plus */}
@@ -97,7 +105,9 @@ export const ScoreBreakdown = ({ data }: ScoreBreakdownProps) => {
             </p>
           )}
 
-          <p className='mt-3 text-xs text-slate-400'>Adjustment range: −20 to +25 points</p>
+          <p className='mt-3 text-xs text-slate-400'>
+            Adjustment range: −{MIN_SIGNAL_POINTS} to +{MAX_SIGNAL_POINTS} points
+          </p>
         </div>
 
         {/* Arrow */}

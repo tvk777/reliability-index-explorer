@@ -3,6 +3,7 @@ import { useMerchantCategories } from '../../hooks/useMerchantCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import type { ScoringWindow } from '../../utils/scoringWindow';
 import { TransactionTable } from './TransactionTable';
+import { CashflowTimeline } from '../cashflow/CashflowTimeline';
 
 type TransactionsViewProps = {
   userId: string;
@@ -89,78 +90,81 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
   }
 
   return (
-    <section className='mt-6 rounded-2xl bg-white p-6 shadow-sm'>
-      <h2 className='text-2xl font-semibold text-slate-900'>Transactions</h2>
+    <>
+      <section className='mt-6 rounded-2xl bg-white p-6 shadow-sm'>
+        <h2 className='text-2xl font-semibold text-slate-900'>Transactions</h2>
 
-      <div className='mt-4'>
-        <label htmlFor='merchant-search' className='block text-sm font-medium text-slate-700'>
-          Merchant
-        </label>
-
-        <input
-          id='merchant-search'
-          type='search'
-          value={merchantSearch}
-          onChange={(event) => setMerchantSearch(event.target.value)}
-          placeholder='Search merchant...'
-          className='mt-1 w-full max-w-sm rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500'
-        />
-      </div>
-
-      <div className='mt-4 flex flex-wrap gap-4'>
-        <div>
-          <label htmlFor='category-filter' className='mr-3 text-sm font-medium text-slate-700'>
-            Category
+        <div className='mt-4'>
+          <label htmlFor='merchant-search' className='block text-sm font-medium text-slate-700'>
+            Merchant
           </label>
 
-          <select
-            id='category-filter'
-            value={selectedCategory}
-            onChange={(event) => setSelectedCategory(event.target.value)}
-            className='rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm'
-          >
-            <option value='all'>All categories</option>
-
-            {categories.categories
-              .filter((category) => availableCategoryCodes.has(category.code))
-              .map((category) => (
-                <option key={category.code} value={category.code}>
-                  {category.name}
-                </option>
-              ))}
-          </select>
+          <input
+            id='merchant-search'
+            type='search'
+            value={merchantSearch}
+            onChange={(event) => setMerchantSearch(event.target.value)}
+            placeholder='Search merchant...'
+            className='mt-1 w-full max-w-sm rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-slate-500'
+          />
         </div>
 
-        <div>
-          <label htmlFor='type-filter' className='mr-3 text-sm font-medium text-slate-700'>
-            Type
-          </label>
+        <div className='mt-4 flex flex-wrap gap-4'>
+          <div>
+            <label htmlFor='category-filter' className='mr-3 text-sm font-medium text-slate-700'>
+              Category
+            </label>
 
-          <select
-            id='type-filter'
-            value={selectedType}
-            onChange={(event) => setSelectedType(event.target.value as TransactionTypeFilter)}
-            className='rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm'
-          >
-            <option value='all'>All types</option>
-            <option value='debit'>Debit</option>
-            <option value='credit'>Credit</option>
-          </select>
+            <select
+              id='category-filter'
+              value={selectedCategory}
+              onChange={(event) => setSelectedCategory(event.target.value)}
+              className='rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm'
+            >
+              <option value='all'>All categories</option>
+
+              {categories.categories
+                .filter((category) => availableCategoryCodes.has(category.code))
+                .map((category) => (
+                  <option key={category.code} value={category.code}>
+                    {category.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor='type-filter' className='mr-3 text-sm font-medium text-slate-700'>
+              Type
+            </label>
+
+            <select
+              id='type-filter'
+              value={selectedType}
+              onChange={(event) => setSelectedType(event.target.value as TransactionTypeFilter)}
+              className='rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm'
+            >
+              <option value='all'>All types</option>
+              <option value='debit'>Debit</option>
+              <option value='credit'>Credit</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <p className='mt-4 text-sm text-slate-500'>
-        Showing {filteredTransactions.length} of {transactions.total} transactions
-      </p>
+        <p className='mt-4 text-sm text-slate-500'>
+          Showing {filteredTransactions.length} of {transactions.total} transactions
+        </p>
 
-      {filteredTransactions.length === 0 ? (
-        <div className='mt-6 rounded-lg border border-dashed border-slate-300 p-8 text-center'>
-          <p className='font-medium text-slate-700'>No transactions found</p>
-          <p className='mt-1 text-sm text-slate-500'>Try adjusting your search or filters.</p>
-        </div>
-      ) : (
-        <TransactionTable transactions={filteredTransactions} categoryMap={categoryMap} />
-      )}
-    </section>
+        {filteredTransactions.length === 0 ? (
+          <div className='mt-6 rounded-lg border border-dashed border-slate-300 p-8 text-center'>
+            <p className='font-medium text-slate-700'>No transactions found</p>
+            <p className='mt-1 text-sm text-slate-500'>Try adjusting your search or filters.</p>
+          </div>
+        ) : (
+          <TransactionTable transactions={filteredTransactions} categoryMap={categoryMap} />
+        )}
+      </section>
+      <CashflowTimeline transactions={transactions.transactions} scoringWindow={scoringWindow} />
+    </>
   );
 };
