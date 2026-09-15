@@ -1,12 +1,12 @@
 import type { ReliabilityResponse } from '../../types/reliability';
-import { getScoringWindow } from '../../utils/scoringWindow';
+import type { ScoringWindow } from '../../utils/scoringWindow';
 
 type ReliabilityOverviewProps = {
   data: ReliabilityResponse;
+  scoringWindow: ScoringWindow;
 };
 
-export const ReliabilityOverview = ({ data }: ReliabilityOverviewProps) => {
-  const scoringWindow = getScoringWindow(data.from);
+export const ReliabilityOverview = ({ data, scoringWindow }: ReliabilityOverviewProps) => {
   return (
     <section className='rounded-2xl bg-white p-6 shadow-sm'>
       <h2 className='text-2xl font-semibold text-slate-900'>Reliability Overview</h2>

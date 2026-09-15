@@ -1,6 +1,6 @@
 import type { ReliabilityResponse } from '../types/reliability';
+import { API_BASE_URL } from './constants';
 
-const API_BASE_URL = 'https://wydokyegph.execute-api.eu-central-1.amazonaws.com';
 
 export const fetchReliability = async (userId: string, from: string):Promise<ReliabilityResponse> => {
   const response = await fetch(`${API_BASE_URL}/api/users/${userId}/reliability?from=${from}`);

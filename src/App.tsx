@@ -1,36 +1,20 @@
-import { useReliability } from './hooks/useReliability';
-import { ReliabilityOverview } from './components/ReliabilityOverview/ReliabilityOverview';
-import { ScoreBreakdown } from './components/ScoreBreakdown/ScoreBreakdown';
-import { KeyMetrics } from './components/KeyMetrics/KeyMetrics';
-import { ScoreDrivers } from './components/ScoreDrivers/ScoreDrivers';
+import { ReliabilityView } from './components/reliability/ReliabilityView';
+import { TransactionsView } from './components/transactions/TransactionsView';
+import { getScoringWindow } from './utils/scoringWindow';
 
-function App() {
+
+
+export const App = () => {
   const userId = 'user_1001';
-  const from = '2026-02-20';
+  const endDate = '2026-02-20';
 
-  const { data, isPending, isError, error } = useReliability(userId, from)
-
-  if (isPending) {
-    return <div className='p-8'>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div className='p-8 text-red-600'>Error: {error.message}</div>;
-  }
+  const scoringWindow = getScoringWindow(endDate);
 
 
   return (
     <main>
-      <ReliabilityOverview data={data} />
-
-      <div className='mt-6 grid gap-6 lg:grid-cols-2'>
-        <KeyMetrics metrics={data.metrics} />
-        <ScoreDrivers drivers={data.drivers} />
-      </div>
-
-      <ScoreBreakdown data={data} />
+      <ReliabilityView userId={userId} scoringWindow={scoringWindow} />
+      <TransactionsView userId={userId} scoringWindow={scoringWindow} />
     </main>
   );
-}
-
-export default App;
+};

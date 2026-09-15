@@ -1,4 +1,4 @@
-type ScoringWindow = {
+export type ScoringWindow = {
   start: string;
   end: string;
 };
