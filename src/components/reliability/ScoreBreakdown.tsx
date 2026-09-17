@@ -1,34 +1,24 @@
 import type { ReliabilityResponse } from '../../types/reliability';
+import { parseScoreDrivers } from '../../utils/scoreDrivers';
 
 type ScoreBreakdownProps = {
   data: ReliabilityResponse;
 };
 
-const getResilienceDrivers = (drivers: string[]) => {
-  return drivers
-    .filter((driver) => /\([+-]\d+\s*pts?\)/i.test(driver))
-    .map((driver) => {
-      const match = driver.match(/\(([+-]\d+)\s*pts?\)/i);
-
-      return {
-        text: driver,
-        points: match ? Number(match[1]) : 0,
-      };
-    });
-};
-
 const SCORING_MONTHS = 6;
 const MAX_SIGNAL_POINTS = 25;
-const MIN_SIGNAL_POINTS = 20;
+const MIN_RESILIENCE_POINTS = -20;
+const MAX_RESILIENCE_POINTS = 25;
 
 export const ScoreBreakdown = ({ data }: ScoreBreakdownProps) => {
   const { metrics, drivers } = data;
 
-  const resilienceDrivers = getResilienceDrivers(drivers);
+  const resilienceDrivers = parseScoreDrivers(drivers);
 
   const netAdjustment = resilienceDrivers.reduce((total, driver) => total + driver.points, 0);
 
   const incomeMonths = Math.round(metrics.income_regularity * SCORING_MONTHS);
+
   const paymentConsistency = Math.round(metrics.essential_payments_consistency * 100);
 
   return (
@@ -90,23 +80,25 @@ export const ScoreBreakdown = ({ data }: ScoreBreakdownProps) => {
         <div className='rounded-xl bg-slate-50 p-5'>
           <h3 className='text-sm font-semibold text-slate-800'>Resilience Adjustments</h3>
 
-          <div className='mt-4 space-y-2'>
-            {resilienceDrivers.map((driver) => (
-              <p key={driver.text} className='text-sm text-slate-600'>
-                {driver.text}
-              </p>
-            ))}
-          </div>
+          {resilienceDrivers.length > 0 ? (
+            <div className='mt-4 space-y-2'>
+              {resilienceDrivers.map((driver) => (
+                <p key={driver.text} className='text-sm text-slate-600'>
+                  {driver.text}
+                </p>
+              ))}
 
-          {resilienceDrivers.length > 0 && (
-            <p className='mt-4 border-t border-slate-200 pt-3 text-sm font-medium text-slate-700'>
-              Net adjustment: {netAdjustment > 0 ? '+' : ''}
-              {netAdjustment} pts
-            </p>
+              <p className='mt-4 border-t border-slate-200 pt-3 text-sm font-medium text-slate-700'>
+                Net adjustment: {netAdjustment > 0 ? '+' : ''}
+                {netAdjustment} pts
+              </p>
+            </div>
+          ) : (
+            <p className='mt-4 text-sm text-slate-500'>No resilience adjustments reported.</p>
           )}
 
           <p className='mt-3 text-xs text-slate-400'>
-            Adjustment range: −{MIN_SIGNAL_POINTS} to +{MAX_SIGNAL_POINTS} points
+            Adjustment range: {MIN_RESILIENCE_POINTS} to +{MAX_RESILIENCE_POINTS} points
           </p>
         </div>
 
