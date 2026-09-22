@@ -6,7 +6,7 @@ import { getScoringWindow } from './utils/scoringWindow';
 
 export const App = () => {
   const userId = 'user_1001';
-  const endDate = '2026-02-20';
+  const endDate = '2026-09-26';
 
   const scoringWindow = getScoringWindow(endDate);
 
