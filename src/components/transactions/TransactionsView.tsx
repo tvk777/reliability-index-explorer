@@ -1,14 +1,10 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useMerchantCategories } from '../../hooks/useMerchantCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import type { ScoringWindow } from '../../utils/scoringWindow';
 import { TransactionTable } from './TransactionTable';
 import { CashflowTimeline } from '../cashflow/CashflowTimeline';
-import { createTransactionEventSource } from '../../api/transaction-events';
-import type { TransactionEvent } from '../../types/transactionEvent';
-import type { TransactionsResponse } from '../../types/transaction';
-import { useQueryClient } from '@tanstack/react-query';
-import { isTransactionInRange } from '../../utils/isTransactionInRange';
+import { useTransactionEvents } from '../../hooks/useTransactionEvents';
 
 type TransactionsViewProps = {
   userId: string;
@@ -35,6 +31,11 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
     isError: isCategoriesError,
     error: categoriesError,
   } = useMerchantCategories();
+
+  useTransactionEvents({
+    userId,
+    scoringWindow,
+  });
 
   const categoryMap = useMemo(() => {
     if (!categories) {
@@ -69,113 +70,6 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
       return matchesCategory && matchesType && matchesMerchant;
     });
   }, [transactions, selectedCategory, selectedType, merchantSearch]);
-
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const eventSource = createTransactionEventSource(userId);
-
-    const transactionsQueryKey = ['transactions', userId, scoringWindow.start, scoringWindow.end];
-
-    const handleTransactionEvent = (event: MessageEvent) => {
-      const data: TransactionEvent = JSON.parse(event.data);
-
-      let transactionsChanged = false;
-
-      switch (data.type) {
-        case 'TRANSACTION_ADDED':
-          if (!isTransactionInRange(data.transaction, scoringWindow.start, scoringWindow.end)) {
-            break;
-          }
-
-          queryClient.setQueryData<TransactionsResponse>(transactionsQueryKey, (currentData) => {
-            if (!currentData) {
-              return currentData;
-            }
-
-            const alreadyExists = currentData.transactions.some(
-              (transaction) => transaction.id === data.transaction.id,
-            );
-
-            if (alreadyExists) {
-              return currentData;
-            }
-
-            transactionsChanged = true;
-
-            return {
-              ...currentData,
-              transactions: [...currentData.transactions, data.transaction],
-            };
-          });
-          break;
-
-        case 'TRANSACTION_UPDATED':
-          queryClient.setQueryData<TransactionsResponse>(transactionsQueryKey, (currentData) => {
-            if (!currentData) {
-              return currentData;
-            }
-
-            const exists = currentData.transactions.some((transaction) => transaction.id === data.transaction.id);
-
-            if (!exists) {
-              return currentData;
-            }
-
-            transactionsChanged = true;
-
-            return {
-              ...currentData,
-              transactions: currentData.transactions.map((transaction) =>
-                transaction.id === data.transaction.id ? data.transaction : transaction,
-              ),
-            };
-          });
-          break;
-
-        case 'TRANSACTION_DELETED':
-          queryClient.setQueryData<TransactionsResponse>(transactionsQueryKey, (currentData) => {
-            if (!currentData) {
-              return currentData;
-            }
-
-            const exists = currentData.transactions.some((transaction) => transaction.id === data.transaction_id);
-
-            if (!exists) {
-              return currentData;
-            }
-
-            transactionsChanged = true;
-
-            return {
-              ...currentData,
-              transactions: currentData.transactions.filter((transaction) => transaction.id !== data.transaction_id),
-            };
-          });
-          break;
-      }
-
-      if (transactionsChanged) {
-        queryClient.invalidateQueries({
-          queryKey: ['reliability', userId, scoringWindow.end],
-        });
-      }
-    };
-
-    eventSource.addEventListener('TRANSACTION_ADDED', handleTransactionEvent);
-
-    eventSource.addEventListener('TRANSACTION_UPDATED', handleTransactionEvent);
-
-    eventSource.addEventListener('TRANSACTION_DELETED', handleTransactionEvent);
-
-    eventSource.onerror = (error) => {
-      console.error('SSE error', error);
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [userId, scoringWindow.start, scoringWindow.end, queryClient]);
 
   if (isTransactionsPending || isCategoriesPending) {
     return (
