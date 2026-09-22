@@ -49,6 +49,7 @@ export const useTransactionEvents = ({ userId, scoringWindow }: UseTransactionEv
             return {
               ...currentData,
               transactions: [...currentData.transactions, data.transaction],
+              total: currentData.total + 1,
             };
           });
 
@@ -95,6 +96,7 @@ export const useTransactionEvents = ({ userId, scoringWindow }: UseTransactionEv
             return {
               ...currentData,
               transactions: currentData.transactions.filter((transaction) => transaction.id !== data.transaction_id),
+              total: currentData.total - 1,
             };
           });
 
