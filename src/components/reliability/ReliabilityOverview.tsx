@@ -1,5 +1,6 @@
 import type { ReliabilityResponse } from '../../types/reliability';
 import type { ScoringWindow } from '../../utils/scoringWindow';
+import { ScoreGauge } from './ScoreGauge';
 
 type ReliabilityOverviewProps = {
   data: ReliabilityResponse;
@@ -15,11 +16,7 @@ export const ReliabilityOverview = ({ data, scoringWindow }: ReliabilityOverview
 
       <div className='mt-6 grid gap-8 md:grid-cols-[auto_1fr_auto] md:items-center'>
         {/* Score */}
-        <div className='flex h-40 w-40 flex-col items-center justify-center rounded-full border-12 border-emerald-500'>
-          <span className='text-4xl font-bold text-slate-900'>{data.reliability_index}</span>
-
-          <span className='text-sm text-slate-500'>out of 100</span>
-        </div>
+        <ScoreGauge score={data.reliability_index} />
 
         {/* Score description */}
         <div>
