@@ -15,14 +15,14 @@ export const CashflowTimeline = ({ transactions, scoringWindow }: CashflowTimeli
   );
 
   return (
-    <section className='mt-6 rounded-2xl bg-white p-6 shadow-sm'>
-      <h2 className='text-2xl font-semibold text-slate-900'>Cashflow Timeline</h2>
+    <section className='mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
+      <h2 className='text-base font-semibold text-slate-900'>Cashflow Timeline</h2>
 
       <p className='mt-1 text-sm text-slate-500'>Monthly income, outflow, and net cashflow for the scoring window.</p>
 
       <div className='mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
         {monthlyCashflow.map((month) => (
-          <div key={month.month} className='rounded-xl bg-slate-50 p-5'>
+          <div key={month.month} className='rounded-lg border border-slate-200 bg-slate-50 p-4'>
             <h3 className='text-sm font-semibold text-slate-800'>{month.month}</h3>
 
             <div className='mt-4 space-y-2 text-sm'>

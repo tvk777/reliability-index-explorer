@@ -73,7 +73,7 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
 
   if (isTransactionsPending || isCategoriesPending) {
     return (
-      <section className='mt-6 rounded-2xl bg-white p-6 shadow-sm'>
+      <section className='mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
         <p className='text-sm text-slate-500'>Loading transactions...</p>
       </section>
     );
@@ -81,7 +81,7 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
 
   if (isTransactionsError) {
     return (
-      <section className='mt-6 rounded-2xl bg-white p-6 shadow-sm'>
+      <section className='mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
         <p className='text-sm text-red-600'>Error loading transactions: {transactionsError.message}</p>
       </section>
     );
@@ -89,7 +89,7 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
 
   if (isCategoriesError) {
     return (
-      <section className='mt-6 rounded-2xl bg-white p-6 shadow-sm'>
+      <section className='mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
         <p className='text-sm text-red-600'>Error loading categories: {categoriesError.message}</p>
       </section>
     );
@@ -97,8 +97,8 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
 
   return (
     <>
-      <section className='mt-6 rounded-2xl bg-white p-6 shadow-sm'>
-        <h2 className='text-2xl font-semibold text-slate-900'>Transactions</h2>
+      <section className='mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
+        <h2 className='text-base font-semibold text-slate-900'>Transactions</h2>
 
         <div className='mt-4'>
           <label htmlFor='merchant-search' className='block text-sm font-medium text-slate-700'>

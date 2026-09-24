@@ -1,5 +1,6 @@
 import { useMemo, useState, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import type { Transaction } from '../../types/transaction';
 import type { MerchantCategory } from '../../types/merchantCategory';
 
@@ -53,7 +54,11 @@ export const TransactionTable = ({ transactions, categoryMap }: TransactionTable
       return null;
     }
 
-    return sortDirection === 'asc' ? ' ↑' : ' ↓';
+    return sortDirection === 'asc' ? (
+      <ArrowUp className='h-3.5 w-3.5 shrink-0' aria-hidden='true' />
+    ) : (
+      <ArrowDown className='h-3.5 w-3.5 shrink-0' aria-hidden='true' />
+    );
   };
 
   return (
@@ -65,7 +70,11 @@ export const TransactionTable = ({ transactions, categoryMap }: TransactionTable
           style={{ gridTemplateColumns: GRID_COLUMNS }}
         >
           <div role='columnheader' className='px-4 py-3 font-medium'>
-            <button type='button' onClick={() => handleSort('date')} className='hover:text-slate-900'>
+            <button
+              type='button'
+              onClick={() => handleSort('date')}
+              className='flex cursor-pointer items-center gap-1 hover:text-slate-900'
+            >
               Date{renderSortIndicator('date')}
             </button>
           </div>
@@ -82,8 +91,12 @@ export const TransactionTable = ({ transactions, categoryMap }: TransactionTable
             Category
           </div>
 
-          <div role='columnheader' className='px-4 py-3 text-right font-medium'>
-            <button type='button' onClick={() => handleSort('amount')} className='hover:text-slate-900'>
+          <div role='columnheader' className='flex justify-end px-4 py-3 font-medium'>
+            <button
+              type='button'
+              onClick={() => handleSort('amount')}
+              className='flex cursor-pointer items-center gap-1 hover:text-slate-900'
+            >
               Amount{renderSortIndicator('amount')}
             </button>
           </div>
