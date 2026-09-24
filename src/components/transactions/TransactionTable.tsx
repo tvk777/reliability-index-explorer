@@ -16,9 +16,26 @@ const GRID_COLUMNS = '120px minmax(140px, 1.2fr) minmax(180px, 2fr) minmax(140px
 
 const ROW_HEIGHT = 53;
 
+const TYPE_BADGE: Record<Transaction['type'], string> = {
+  debit: 'border-red-200 bg-red-50 text-red-700',
+  credit: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+};
+
+const AMOUNT_COLOR: Record<Transaction['type'], string> = {
+  debit: 'text-red-600',
+  credit: 'text-emerald-600',
+};
+
+const AMOUNT_SIGN: Record<Transaction['type'], string> = {
+  debit: '−',
+  credit: '+',
+};
+
 export const TransactionTable = ({ transactions, categoryMap }: TransactionTableProps) => {
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+  const currency = transactions[0]?.currency;
 
   const sortedTransactions = useMemo(() => {
     return [...transactions].sort((a, b) => {
@@ -61,6 +78,14 @@ export const TransactionTable = ({ transactions, categoryMap }: TransactionTable
     );
   };
 
+  const getAriaSort = (field: SortField): 'none' | 'ascending' | 'descending' => {
+    if (field !== sortField) {
+      return 'none';
+    }
+
+    return sortDirection === 'asc' ? 'ascending' : 'descending';
+  };
+
   return (
     <div className='mt-6 overflow-x-auto'>
       <div role='table' className='min-w-[900px]'>
@@ -69,11 +94,11 @@ export const TransactionTable = ({ transactions, categoryMap }: TransactionTable
           className='grid border-b border-slate-200 text-slate-500'
           style={{ gridTemplateColumns: GRID_COLUMNS }}
         >
-          <div role='columnheader' className='px-4 py-3 font-medium'>
+          <div role='columnheader' aria-sort={getAriaSort('date')} className='px-4 py-3 font-medium'>
             <button
               type='button'
               onClick={() => handleSort('date')}
-              className='flex cursor-pointer items-center gap-1 hover:text-slate-900'
+              className='flex cursor-pointer items-center gap-1 rounded hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1'
             >
               Date{renderSortIndicator('date')}
             </button>
@@ -91,13 +116,18 @@ export const TransactionTable = ({ transactions, categoryMap }: TransactionTable
             Category
           </div>
 
-          <div role='columnheader' className='flex justify-end px-4 py-3 font-medium'>
+          <div
+            role='columnheader'
+            aria-sort={getAriaSort('amount')}
+            className='flex justify-end px-4 py-3 font-medium'
+          >
             <button
               type='button'
               onClick={() => handleSort('amount')}
-              className='flex cursor-pointer items-center gap-1 hover:text-slate-900'
+              className='flex cursor-pointer items-center gap-1 rounded hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1'
             >
-              Amount{renderSortIndicator('amount')}
+              Amount{currency ? ` (${currency})` : ''}
+              {renderSortIndicator('amount')}
             </button>
           </div>
 
@@ -119,7 +149,7 @@ export const TransactionTable = ({ transactions, categoryMap }: TransactionTable
                 <div
                   key={transaction.id}
                   role='row'
-                  className='grid border-b border-slate-100'
+                  className='grid border-b border-slate-100 hover:bg-slate-50'
                   style={{
                     gridTemplateColumns: GRID_COLUMNS,
                     position: 'absolute',
@@ -146,12 +176,20 @@ export const TransactionTable = ({ transactions, categoryMap }: TransactionTable
                     {categoryMap.get(transaction.merchant_category_code)?.name}
                   </div>
 
-                  <div role='cell' className='px-4 py-3 text-right font-medium'>
+                  <div
+                    role='cell'
+                    className={`px-4 py-3 text-right font-medium tabular-nums ${AMOUNT_COLOR[transaction.type]}`}
+                  >
+                    {AMOUNT_SIGN[transaction.type]}
                     {transaction.amount.toFixed(2)} {transaction.currency}
                   </div>
 
-                  <div role='cell' className='px-4 py-3 text-slate-600'>
-                    {transaction.type}
+                  <div role='cell' className='px-4 py-3'>
+                    <span
+                      className={`inline-flex rounded-md border px-1.5 py-0.5 text-xs font-medium capitalize ${TYPE_BADGE[transaction.type]}`}
+                    >
+                      {transaction.type}
+                    </span>
                   </div>
                 </div>
               );
