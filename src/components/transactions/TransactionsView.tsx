@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import { AlertCircle, Search, SearchX } from 'lucide-react';
 import { useMerchantCategories } from '../../hooks/useMerchantCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import type { ScoringWindow } from '../../utils/scoringWindow';
@@ -44,6 +44,7 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
     isPending: isTransactionsPending,
     isError: isTransactionsError,
     error: transactionsError,
+    refetch: refetchTransactions,
   } = useTransactions(userId, scoringWindow.start, scoringWindow.end);
 
   const {
@@ -51,6 +52,7 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
     isPending: isCategoriesPending,
     isError: isCategoriesError,
     error: categoriesError,
+    refetch: refetchCategories,
   } = useMerchantCategories();
 
   useTransactionEvents({
@@ -95,7 +97,22 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
   if (isTransactionsPending || isCategoriesPending) {
     return (
       <section className='mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
-        <p className='text-sm text-slate-500'>Loading transactions...</p>
+        <div className='animate-pulse space-y-4'>
+          <div className='h-4 w-28 rounded bg-slate-200' />
+          <div className='h-3 w-56 rounded bg-slate-200' />
+
+          <div className='flex flex-wrap gap-4 pt-2'>
+            <div className='h-9 w-full max-w-sm rounded-lg bg-slate-200' />
+            <div className='h-9 w-32 rounded-lg bg-slate-200' />
+            <div className='h-9 w-32 rounded-lg bg-slate-200' />
+          </div>
+
+          <div className='space-y-2 pt-2'>
+            <div className='h-10 w-full rounded bg-slate-200' />
+            <div className='h-10 w-full rounded bg-slate-200' />
+            <div className='h-10 w-full rounded bg-slate-200' />
+          </div>
+        </div>
       </section>
     );
   }
@@ -103,7 +120,23 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
   if (isTransactionsError) {
     return (
       <section className='mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
-        <p className='text-sm text-red-600'>Error loading transactions: {transactionsError.message}</p>
+        <div className='flex items-start gap-3'>
+          <AlertCircle className='mt-0.5 h-5 w-5 shrink-0 text-red-600' aria-hidden='true' />
+
+          <div>
+            <p className='text-sm font-semibold text-slate-900'>Failed to load transactions</p>
+
+            <p className='mt-1 text-sm text-slate-600'>{transactionsError.message}</p>
+
+            <button
+              type='button'
+              onClick={() => refetchTransactions()}
+              className='mt-3 cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50'
+            >
+              Retry
+            </button>
+          </div>
+        </div>
       </section>
     );
   }
@@ -111,7 +144,23 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
   if (isCategoriesError) {
     return (
       <section className='mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
-        <p className='text-sm text-red-600'>Error loading categories: {categoriesError.message}</p>
+        <div className='flex items-start gap-3'>
+          <AlertCircle className='mt-0.5 h-5 w-5 shrink-0 text-red-600' aria-hidden='true' />
+
+          <div>
+            <p className='text-sm font-semibold text-slate-900'>Failed to load merchant categories</p>
+
+            <p className='mt-1 text-sm text-slate-600'>{categoriesError.message}</p>
+
+            <button
+              type='button'
+              onClick={() => refetchCategories()}
+              className='mt-3 cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50'
+            >
+              Retry
+            </button>
+          </div>
+        </div>
       </section>
     );
   }
@@ -202,8 +251,10 @@ export const TransactionsView = ({ userId, scoringWindow }: TransactionsViewProp
         </p>
 
         {filteredTransactions.length === 0 ? (
-          <div className='mt-6 rounded-lg border border-dashed border-slate-300 p-8 text-center'>
-            <p className='font-medium text-slate-700'>No transactions found</p>
+          <div className='mt-6 flex flex-col items-center rounded-lg border border-dashed border-slate-300 p-8 text-center'>
+            <SearchX className='h-8 w-8 text-slate-400' aria-hidden='true' />
+
+            <p className='mt-3 font-medium text-slate-700'>No transactions found</p>
             <p className='mt-1 text-sm text-slate-500'>Try adjusting your search or filters.</p>
 
             {hasActiveFilters && (
