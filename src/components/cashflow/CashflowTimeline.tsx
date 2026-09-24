@@ -42,7 +42,7 @@ export const CashflowTimeline = ({ transactions, scoringWindow }: CashflowTimeli
 
       <p className='mt-1 text-sm text-slate-500'>Monthly income, outflow, and net cashflow for the scoring window.</p>
 
-      <div className='mt-4 grid grid-cols-3 divide-x divide-slate-200 rounded-lg border border-slate-200 bg-slate-50 text-center'>
+      <div className='mt-4 grid grid-cols-1 divide-y divide-slate-200 rounded-lg border border-slate-200 bg-slate-50 text-center sm:grid-cols-3 sm:divide-x sm:divide-y-0'>
         <div className='px-3 py-3'>
           <p className='text-xs font-medium uppercase tracking-wide text-slate-500'>Total income</p>
           <p className='mt-1 text-lg font-semibold tabular-nums text-emerald-600'>+{totals.income.toFixed(2)}</p>
