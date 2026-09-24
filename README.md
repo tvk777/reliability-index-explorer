@@ -2,6 +2,10 @@
 
 An internal-style frontend tool for exploring a user's Reliability Index, transactions, cashflow, and the score drivers behind the score. It lets you pick a user and an "as of" date, then browse the derived six-month scoring window, the reliability score breakdown, and the underlying transaction history — including live updates as new transactions arrive.
 
+## Demo
+
+[Live Demo](https://reliability-index-explorer.vercel.app/)
+
 ## Getting Started
 
 **Prerequisites**: Node.js 20+ and npm.
